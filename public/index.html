@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone Quoted Chat Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial Black', Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f5f0;
+            color: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            border: 4px solid #000;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 8px 8px 0px #00F0FF;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .content-wrapper {
+            display: flex;
+            gap: 35px;
+        }
+        .form-section {
+            flex: 1;
+        }
+        .result-section {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 400px;
+            border: 3px dashed #ccc;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 22px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input[type="text"], input[type="color"] {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: #fff;
+            border: 3px solid #000;
+            border-radius: 10px;
+            color: #000;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.1s ease;
+        }
+        input[type="text"]:focus, input[type="color"]:focus {
+            box-shadow: 4px 4px 0px #00F0FF;
+        }
+        input[type="color"] {
+            height: 50px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00F0FF;
+            color: #000;
+            border: 3px solid #000;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 4px 4px 0px #000;
+        }
+        button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
+        }
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 4px 4px 0px #000;
+        }
+        #result img {
+            max-width: 100%;
+            border: 4px solid #000;
+            border-radius: 12px;
+            box-shadow: 6px 6px 0px #00F0FF;
+        }
+        #error {
+            color: #ff4444;
+            margin-top: 22px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px dashed #ff4444;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            .result-section {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>iPhone Quoted Chat Generator</h1>
+        <div class="content-wrapper">
+            <div class="form-section">
+                <form id="generatorForm">
+                    <div class="form-group">
+                        <label for="text">Text Pesan</label>
+                        <input type="text" id="text" value="ehmmmm?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="chatTime">Waktu Chat</label>
+                        <input type="text" id="chatTime" value="11:02" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="statusBarTime">Waktu Status Bar</label>
+                        <input type="text" id="statusBarTime" value="17:01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fontName">Nama Font</label>
+                        <input type="text" id="fontName" value="Arial" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signalName">Nama Provider</label>
+                        <input type="text" id="signalName" value="Telkomsel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apikey">API Key</label>
+                        <input type="text" id="apikey" value="freeApikey" required>
+                    </div>
+                    <button type="submit" id="submitBtn">Generate</button>
+                </form>
+                <div id="error"></div>
+            </div>
+            <div class="result-section">
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('generatorForm');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            resultDiv.innerHTML = '';
+            errorDiv.innerHTML = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating...';
+
+            const data = {
+                text: document.getElementById('text').value,
+                chatTime: document.getElementById('chatTime').value,
+                statusBarTime: document.getElementById('statusBarTime').value,
+                bubbleColor: '#272a2f',
+                menuColor: '#272a2f',
+                textColor: '#FFFFFF',
+                fontName: document.getElementById('fontName').value,
+                signalName: document.getElementById('signalName').value,
+                apikey: document.getElementById('apikey').value
+            };
+
+            try {
+                const response = await fetch('/api/iqc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate image');
+                }
+
+                const blob = await response.blob();
+                const imgUrl = URL.createObjectURL(blob);
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.alt = 'Generated iPhone Quoted Chat';
+                resultDiv.appendChild(img);
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate';
+            }
+        });
+    </script>
+</body>
+</html>
